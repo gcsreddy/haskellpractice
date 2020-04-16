@@ -1,8 +1,5 @@
 module Main where
 
-import Text.Read
-import Control.Monad
-
 newtype State s a = State{ runState :: s -> (a,s) }
 -- runState is a function type
 
@@ -20,6 +17,8 @@ name :: Person -> String
 -- runState is an accessor so we don't have to pattern match the State 
 runState :: State s a -> (s -> (a,s))
 
+-- there is no State constructor. 
+-- Only way to produce State s a is to run the following function
 state :: (s -> (a,s)) ->  State s a
 
 --       Monad     m      where
