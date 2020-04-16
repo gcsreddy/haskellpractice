@@ -11,7 +11,7 @@ data Person = Person{
                     , age :: Int 
                     }
 
---name is also a accessor function which takes Person and return String
+--name is also an accessor function which takes Person and return String
 name :: Person -> String
 
 -- runState is an accessor so we don't have to pattern match the State 
@@ -42,5 +42,13 @@ p >>= k = q where -- p :: State s a ; k :: a -> (State s b) ; q :: State s b
 
 
   q = state q' -- q :: State s b  ; q' :: s -> (b,s)
+
+
+-- alternatively
+p >>= k = state $ \s0 ->
+  let (x, s1) = runState p s0
+  in runState (k x) s1  -- returns (y::b, s2::s) as input to state function
+-- state then convert (y,s2) into State s2::s y::b , the output
+
 
 
