@@ -51,4 +51,8 @@ p >>= k = state $ \s0 ->
 -- state then convert (y,s2) into State s2::s y::b , the output
 
 
+-- to get the initial state in the first place, the function is
+put newState = state $ \_ -> ((), newState)
 
+-- get
+get = state $ \s -> (s,s)
