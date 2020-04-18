@@ -44,3 +44,24 @@ main2 :: IO ()
 main2 = do
   runMaybeT askPassword2 -- try running this line only in ghci. last print will be Just()
   return ()
+
+askPassword3 :: MaybeT IO ()
+askPassword3 = do
+  lift $ putStrLn "enter password"
+  pwd <- msum $ repeat getPassword2
+  lift $ putStrLn ("storing your password " ++ pwd)
+
+main3 :: IO ()
+main3 = do
+  runMaybeT askPassword3 -- try running this line only in ghci. last print will be Just()
+  return ()
+
+
+{-
+  Notes to self
+
+  lift vs liftIO .. use liftIO
+  https://stackoverflow.com/questions/3921237/haskell-lift-vs-liftio
+  
+
+-}
