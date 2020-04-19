@@ -35,7 +35,7 @@ askPassword2 = do -- this do is in monad (MaybeT IO)
 
 getPassword2 :: MaybeT IO String
 getPassword2 = do
-  s  <- lift getLine -- lift :: ma -> t ma; here m is (MaybeT IO);  
+  s  <- lift getLine -- lift :: ma -> t ma; here t m is (MaybeT IO);
   -- >>= takes care of case - maybe of s and breaks if it is Nothing, next line will not be reached
   guard (isValidPwd s) -- guard :: Bool -> ma
   return s -- :: (MaybeT IO) String
@@ -62,6 +62,12 @@ main3 = do
 
   lift vs liftIO .. use liftIO
   https://stackoverflow.com/questions/3921237/haskell-lift-vs-liftio
-  
+
+  precursor monad in MaybeT IO a is Maybe and base monad id IO
+
+  Why there is no State data constructor?
+  https://stackoverflow.com/questions/24103108/where-is-the-data-constructor-for-state
 
 -}
+
+
