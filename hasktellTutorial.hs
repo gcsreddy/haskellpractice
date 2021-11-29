@@ -487,7 +487,11 @@ ghci> :t show
 show :: Show a => a -> String
 ghci> show True
 "True"
-ghci> 
+ghci> minBound :: GHC.Int.Int8
+-128 
+
+ghci> :t minBound 
+minBound :: Bounded a => a
 
 --Read is opposite to Show
 
@@ -567,10 +571,6 @@ charName 'c' = "Cat"
 
 ghci> charName 'a'
 "At"
-ghci> charName 'h'
-"*** Exception: baby.hs:(22,1)-(24,20): 
-Non-exhaustive patterns in function charName
-
 
 --When making patterns, we should always 
 --include a catch-all pattern so that our program 
@@ -953,7 +953,7 @@ ghci> (max 4) 5
 -- both are equivalent
 -- currying
 -- putting space between two things is simply
--- function application. space has highes 
+-- function application. space has highest 
 -- precedence
 max :: (Ord a) => a -> a -> a
 max :: (Ord a) => a -> (a -> a)
@@ -1467,3 +1467,195 @@ cuboidVolume l w h = l*w*h
 
 ghci> cubeArea 4
 96.0
+
+
+
+
+{-
+Wall  flag will let us know when we are not handling all cases, partial funcs
+
+:set -Wall
+
+-}
+
+-- Monoid - binary op with identity element
+-- should satisfy id and associativity laws
+gchi> mappend [1..5] [4..9]
+[1,2,3,4,5,4,5,6,7,8,9]
+gchi> mappend [1..5] []
+[1,2,3,4,5]
+gchi> mappend [1..5] mempty
+[1,2,3,4,5]
+gchi> mappend mempty mempty
+()
+gchi> mempty 
+()
+gchi> mempty :: [a]
+[]
+gchi> 
+-- Integers form a monoid under summation and multiplication
+-- Typeclass instances are unique to the type they are for
+-- so we cannot have monoid for Num instances because of sum and mul two monoids
+-- solution, we have Sum and Product newtypes to wrap numeric values and signal
+-- which Monoid instanace we want.
+gchi> Data.Monoid.Sum 2
+Sum {getSum = 2}
+gchi> 
+gchi> mappend (Data.Monoid.Sum 2) mempty
+Sum {getSum = 2}
+gchi> 
+gchi> Data.Monoid.Product 5
+Product {getProduct = 5}
+gchi> mappend (Data.Monoid.Product 5) mempty
+Product {getProduct = 5}
+gchi> mappend (Data.Monoid.Product 5) (Data.Monoid.Product 6)
+Product {getProduct = 30}
+
+{-
+why you might use newtype
+1. Signal intent: using newtype makes it clear that you only intend 
+for it to be a wrapper for the underlying type. The newtype cannot 
+eventually grow into a more complicated sum or product type, 
+while a normal datatype can.
+2. Improve type safety: avoid mixing up many values of the 
+same representation, such as Text or Integer.
+3. Add different typeclass instances to a type that is otherwise 
+unchanged representationally, such as with Sum and Product.
+-}
+
+-- Semigroup is monoid minus identity elem and identity laws
+infixr 6 <>
+gchi> mappend "hello " "world" 
+"hello world"
+gchi> mappend "hello " mempty
+"hello "
+gchi> "hello " <> "world" 
+"hello world"
+gchi> "hello " <> mempty
+"hello "
+gchi> 
+gchi> :i mappend
+type Monoid :: * -> Constraint
+class Semigroup a => Monoid a where
+  ...
+  mappend :: a -> a -> a
+  ...
+        -- Defined in ‘GHC.Base’
+gchi> :i (<>)
+type Semigroup :: * -> Constraint
+class Semigroup a where
+  (<>) :: a -> a -> a
+  ...
+        -- Defined in ‘GHC.Base’
+
+-- Bool have two possible monoids, conjuction and disjunction
+-- All , Any are the newtypes for Bool
+gchi> All True
+All {getAll = True}
+gchi> All True <> All True
+All {getAll = True}
+gchi> All True <> All False
+All {getAll = False}
+gchi> Any True <> Any False
+Any {getAny = True}
+
+-- maybe has more than two possible Monoids
+-- First, Last new Types
+
+
+
+--FUNCTOR
+--fmap :; Functor f => (a -> b) -> f a -> f b
+--fmap <$>
+--{-# LANGUAGE RankNTypes #-}
+type Nat f g = forall a . f a -> g a
+
+--{-# LANGUAGE FlexibleInstances #-}
+{-
+Monoid gives us a means of mashing two values of same type together.
+Monoid op mappend smashes teh structures together
+Functor is for function application over some structure we don't 
+want to have to think about.
+Applicative is a monoidal functor.
+With Applicative the function we are applying is also embedded in some 
+structure. Becase the function and the value its being applied to both 
+have strucutre, we have to smash those structures together.
+So, Applicative involves monoids and functors.
+-}
+
+class Functor f => Applicative f where
+  pure :: a -> f a 
+  (<*>) :: f (a -> b) -> f a -> f b
+
+{-
+self notes - my thoughts:
+Again, monoid view
+f (something) operator f(someotherthing) = f(umm..somethingelse)
+what if the operator is apply, more preciesly, function application/evaluation?
+f (sth) apply/eval f (otherthing)  -> f(sthelse)
+sth has to be a functiontype object to be applied with otherthing to produce sthelse
+f-strucutres on either side of apply is being smashed together 
+(pure id) is the unit
+-}
+{-
+so far we have Functor and its fmap and its essence is preserving composition. In other
+words, preserving the sequence of functions applications over some structures. For that,
+the tool used in fmap. 
+We also have applicative
+
+<$> :: (a -> b) -> f a -> f b // fmap, liftA, 
+<*> :: f (a -> b) -> f a -> f b
+
+
+-}
+
+{-
+
+(>=>) :: (a -> mb) -> (b -> mc) -> (a -> mc)
+(>>=) :: ma -> (a -> mb) -> mc
+return :: a -> ma //pure
+join :: m(ma) -> ma
+fmap :: (a -> b) -> ma -> mb
+(>>=) ma  (a -> mb) = join(fmap (a -> mb)  ma)
+fmap f x = x >>= (return . f)
+join x = x >>= id
+
+(>>) :: ma -> mb -> mb // discards ma; same as semicolon
+(*>) :: Applicative f => fa -> fb -> fb
+
+liftM = liftA = <$> = fmap 
+ap = <$>
+-}
+
+
+doubleList :: Num a => [a] -> [a]
+doubleList nums = case nums of
+  [] -> []
+  x:xs -> 2*x : doubleList xs
+
+tripleList :: Num a => [a] -> [a]
+tripleList nums = case nums of
+  [] -> []
+  x:xs -> 3*x : tripleList xs
+
+addFiveToList :: Num a => [a] -> [a]
+addFiveToList nums = case nums of
+  [] -> []
+  x:xs -> 5 + x : addFiveToList xs
+
+mymap :: (a -> b) -> [a] -> [b]
+mymap f list = case list of 
+  [] -> []
+  x:xs -> f x : mymap f xs
+
+
+
+--       [ +5, +6]  -> [1, 20] -> [6, 25, 7, 26]
+myap :: [(a -> b)] -> [a] -> [b]
+myap funcList alist = case funcList of
+  [] -> []
+  --f : fs -> fmap f alist <> myap fs alist -- that is why it is monoidal functor
+  f : fs -> let mymap f list = case list of 
+                                [] -> []
+                                x:xs -> f x : mymap f xs
+            in mymap f alist <> myap fs alist -- that is why it is monoidal functor
