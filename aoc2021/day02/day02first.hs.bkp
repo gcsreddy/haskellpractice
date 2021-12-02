@@ -1,0 +1,17 @@
+
+main = do
+    x <- readFile "./day02input.txt"
+    let y = words <$> (lines x)
+    let f = filter (\a -> (a !! 0) == "forward" ) y
+    let fs = sum $ fmap ((read::String -> Int) . (!! 1)) f
+
+    let u = filter (\a -> (a !! 0) == "up" ) y
+    let us = sum $ fmap ((read::String -> Int) . (!! 1)) u
+
+    let d = filter (\a -> (a !! 0) == "down" ) y
+    let ds = sum $ fmap ((read::String -> Int) . (!! 1)) d
+
+    
+    --putStrLn (y !! 0 !! 0)
+    putStrLn . show $ (fs * (ds - us))
+
