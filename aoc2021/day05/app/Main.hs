@@ -6,7 +6,6 @@ import Data.List.Split
 import Control.Monad
 
 data Point = Point {x :: Int, y :: Int } deriving (Eq, Ord, Show)
-type Line = [Point]
 
 isOrtho :: [Int] -> Bool
 isOrtho (a:b:c:d:_) = (a == c) || (b == d) 
@@ -35,7 +34,7 @@ main = do
     x <- lines <$> readFile "./day05input.txt"
     let z =(fmap . fmap) (read::String -> Int) $ (fmap . filter) (/="") $ fmap (splitOneOf " -> ,") x
 
-        grpedpointsPartOne= group $ sort $ join $ fmap linePointsPartTwo $ filter isOrtho z
+        grpedpointsPartOne= group $ sort $ join $ fmap linePointsPartOne $ filter isOrtho z
         grpedpointsPartTwo = group $ sort $ join $ fmap linePointsPartTwo z
 
     putStrLn . show $ length $ filter (>1) $ fmap length grpedpointsPartOne
