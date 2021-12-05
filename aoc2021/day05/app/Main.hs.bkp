@@ -1,0 +1,30 @@
+module Main where
+
+import Data.Char
+import Data.List
+import Data.List.Split
+import Control.Monad
+
+data Point = Point {x :: Int, y :: Int } deriving (Eq, Ord, Show)
+type Line = [Point]
+
+isOrtho :: [Int] -> Bool
+isOrtho (a:b:c:d:_) = (a == c) || (b == d) 
+isOrtho _ = False
+
+linePoints :: [Int] -> [Point]
+linePoints (a:b:c:d:_) 
+    | a == c && b <= d = fmap (Point a) [b..d]
+    | a == c && b >  d = fmap (Point a) [d..b]
+    | b == d && a <= c = fmap (flip (Point) b) [a..c]
+    | b == d && a >  c = fmap (flip (Point) b) [c..a]
+
+main :: IO ()
+main = do
+    x <- lines <$> readFile "./day05input.txt"
+    let z =(fmap . fmap) (read::String -> Int) $ (fmap . filter) (/="") $ fmap (splitOneOf " -> ,") x
+        m = filter isOrtho z
+        allpoints = join $ fmap linePoints m
+        sortedpoints = sort allpoints
+        grpedpoints = group sortedpoints
+    putStrLn . show $ length $ filter (>1) $ fmap length grpedpoints
