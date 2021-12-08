@@ -6,21 +6,21 @@ import Data.List.Split
 import Data.Set
 
 func1 :: [[Set Char]] -> Maybe Int
-func1 (inputDigits:outDigits:_) = 
-    let one = head $ L.filter (\s -> length s == 2) inputDigits
-        seven = head $ L.filter (\s -> length s == 3) inputDigits
-        four = head $ L.filter (\s -> length s == 4) inputDigits
-        eight = head $ L.filter (\s -> length s == 7) inputDigits
-        nine = head $ L.filter (\s -> length s == 6 && four `isSubsetOf` s ) inputDigits
-        six = head $ L.filter (\s -> length s == 6 && not (four `isSubsetOf` s) && not (one `isSubsetOf` s)) inputDigits 
-        zero = head $ L.filter (\s -> length s == 6 && not (four `isSubsetOf` s) && one `isSubsetOf` s) inputDigits
-        five = head $ L.filter (\s -> length s == 5 && s `isSubsetOf` six) inputDigits
-        three = head $ L.filter (\s -> length s == 5 && not (s `isSubsetOf` six) && s `isSubsetOf` nine ) inputDigits
-        two = head $ L.filter (\s -> length s == 5 && not (s `isSubsetOf` six) && not (s `isSubsetOf` nine) ) inputDigits
+func1 (inSegDigits:outSegDigits:_) = 
+    let one = head $ L.filter (\s -> length s == 2) inSegDigits
+        seven = head $ L.filter (\s -> length s == 3) inSegDigits
+        four = head $ L.filter (\s -> length s == 4) inSegDigits
+        eight = head $ L.filter (\s -> length s == 7) inSegDigits
+        nine = head $ L.filter (\s -> length s == 6 && four `isSubsetOf` s ) inSegDigits
+        six = head $ L.filter (\s -> length s == 6 && not (four `isSubsetOf` s) && not (one `isSubsetOf` s)) inSegDigits 
+        zero = head $ L.filter (\s -> length s == 6 && not (four `isSubsetOf` s) && one `isSubsetOf` s) inSegDigits
+        five = head $ L.filter (\s -> length s == 5 && s `isSubsetOf` six) inSegDigits
+        three = head $ L.filter (\s -> length s == 5 && not (s `isSubsetOf` six) && s `isSubsetOf` nine ) inSegDigits
+        two = head $ L.filter (\s -> length s == 5 && not (s `isSubsetOf` six) && not (s `isSubsetOf` nine) ) inSegDigits
 
         r = zip [zero,one,two,three,four,five,six,seven,eight,nine] $ show <$> [0..9]
 
-        in fmap (read::String -> Int) $ fmap concat $ sequenceA $ fmap (\s -> lookup s r) outDigits
+        in fmap (read::String -> Int) $ fmap concat $ sequenceA $ fmap (\s -> lookup s r) outSegDigits
 
 
 main :: IO ()
