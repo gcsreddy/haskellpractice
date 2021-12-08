@@ -28,7 +28,7 @@ main = do
     v <- lines <$> readFile "./day08input.txt"
     let w = splitOn "|" <$> v
 
-        part1Ans = length $ L.filter (\n -> if n == 2 || n == 4 || n == 3 || n == 7 then True else False) $ join $ (fmap.fmap) length $ fmap words $ fmap (\(a:b:[]) -> b) w
+        part1Ans = length $ L.filter (flip(elem) [2,3,4,7]) $ w >>= (fmap length . words . (\(a:b:[]) -> b))
 
         part2Ans = fmap sum $ sequenceA $ fmap func1 $ (fmap.fmap.fmap) Data.Set.fromList $ (fmap.fmap) words w
 
