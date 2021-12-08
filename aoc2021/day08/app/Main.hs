@@ -28,9 +28,9 @@ main = do
     v <- lines <$> readFile "./day08input.txt"
     let w = splitOn "|" <$> v
 
-        part1Ans = length $ L.filter (flip(elem) [2,3,4,7]) $ w >>= (fmap length . words . (\(a:b:[]) -> b))
+        part1Ans = length $ L.filter (flip(elem) [2,3,4,7]) $ (fmap length . words . (\(a:b:[]) -> b)) =<< w
 
-        part2Ans = fmap sum $ sequenceA $ fmap func1 $ (fmap.fmap.fmap) Data.Set.fromList $ (fmap.fmap) words w
+        part2Ans = fmap sum . sequenceA . fmap func1 $ (fmap.fmap) (fmap Data.Set.fromList . words) w
 
     
     putStrLn . show $ part1Ans
