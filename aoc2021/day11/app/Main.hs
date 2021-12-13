@@ -43,7 +43,6 @@ iterateFunc (count, matrix) =
 
 
 main :: IO ()
---main = putStrLn "Hello, Haskell!"
 main = do
     v <- lines <$> readFile "./input.txt"
     let w = (fmap . fmap) digitToInt v
@@ -58,7 +57,7 @@ main = do
         pns p = fmap (\(i,j) -> Position i j) $ ns (px p) (py p)
         m = fmap (\r -> fmap (\((e,x),y) -> Octp e Building (Position x y) (pns (Position x y) )) r ) y
 
-    putStrLn . show $ sum $ take 101 $ fmap (\(c,mt) -> c) $ iterate iterateFunc (0,m) --partOne
+    putStrLn . show $ sum $ take 100 $ drop 1 $ fmap (\(c,mt) -> c) $ iterate iterateFunc (0,m) --partOne
     putStrLn . show $ findIndex(==100) $ fmap (\(c,mt) -> c) $ iterate iterateFunc (0,m) --partTwo
 
 
