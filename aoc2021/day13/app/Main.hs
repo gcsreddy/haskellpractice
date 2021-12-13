@@ -19,10 +19,9 @@ main = do
     let 
         p = (fmap (read::String -> Int)) <$> splitOn "," <$> takeWhile (not.null) v
         folds = fmap (\(x:y:[]) -> (x,(read::String -> Int) y)) $ fmap (splitOn "=") $ join $ fmap (drop 2) $ fmap words $ drop 1 $ dropWhile (not.null) v
-        yfolds = filter ((== "y") . fst)folds
-        partOne = length $ nub $ foldleft 655 p
-        ans = sort $ fmap (\(a:b:[]) -> (a,b)) $ foldl (flip(foldxy)) p folds
+        partOne = length $ nub $ sort $ fmap (\(a:b:[]) -> (a,b)) $ foldl (flip(foldxy)) p $ take 1 folds
+        partTwo = sort $ fmap (\(a:b:[]) -> (a,b)) $ foldl (flip(foldxy)) p folds
 
     putStrLn . show $ partOne
-    putStrLn . show $ ans
+    putStrLn . show $ partTwo
     --todo - print ans on a grid 
