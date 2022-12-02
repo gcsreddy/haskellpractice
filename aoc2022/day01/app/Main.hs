@@ -8,5 +8,5 @@ main :: IO ()
 main = do
     v <- readFile "./input.txt"
     let x = lines v
-    putStrLn . show $ maximum $ sum <$> ((read:: String -> Int) <$>) <$> splitWhen (=="") x
-    putStrLn . show $ sum $ take 3 $ reverse . sort $ sum <$> ((read:: String -> Int) <$>) <$> splitWhen (=="") x
+    putStrLn . show $ maximum $ sum <$> ((read:: String -> Int) <$>) <$> splitWhen (=="") x -- partone
+    putStrLn . show $ sum $ take 3 $ reverse . sort $ sum <$> ((read:: String -> Int) <$>) <$> splitWhen (=="") x --parttwo
