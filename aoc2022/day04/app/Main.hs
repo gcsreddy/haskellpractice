@@ -2,7 +2,6 @@ module Main where
 
 import qualified Data.List as L
 import qualified Data.List.Split as LS
-import qualified Data.Map as M
 
 
 overlapAll ranges = let xs = fmap (read:: String  -> Int) $ LS.splitOneOf (",-") ranges
